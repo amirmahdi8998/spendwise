@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpendWise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">💰 SpendWise</a>
+        {% if 'user_id' in session %}
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ session['username'] }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="{{ url_for('change_password') }}">Change Password</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log Out</a></li>
+            </ul>
+          </div>
+
+          <!-- Display Monthly Income and Remaining Balance safely -->
+          <div class="ms-4">
+            <!-- Monthly Income always green -->
+            <span><strong>Monthly Income:</strong>
+              <span class="text-success">${{ monthly_income or 0 }}</span>
+            </span><br>
+
+            <!-- Remaining Balance: green if positive, red if negative -->
+            <span><strong>Remaining Balance:</strong>
+              <span class="{% if remaining_balance is defined and remaining_balance < 0 %}text-danger{% else %}text-success{% endif %}">
+                ${{ remaining_balance if remaining_balance is defined else 0 }}
+              </span>
+            </span>
+          </div>
+        {% else %}
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <main class="container mt-4">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-info">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center mt-5 mb-3 text-muted small">
+      Made with ❤️ by AmirMahdiGhaffari For Cs50 Final Project
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

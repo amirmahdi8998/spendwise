@@ -1,0 +1,18 @@
+<div class="list-group-item d-flex justify-content-between align-items-start">
+  <div>
+    <div class="fw-bold">{{ e['title'] or 'No Title' }}</div>
+    <div class="small text-muted">{{ e['category'] }} • {{ e['date'] }}</div>
+    {% if e['note'] %}
+      <div class="small mt-1">{{ e['note'] }}</div>
+    {% endif %}
+  </div>
+  <div class="text-end">
+    <div class="fw-bold text-danger">
+      ${{ '{:,.0f}'.format(e['amount']) }}
+    </div>
+    <form action="{{ url_for('delete', exp_id=e['id']) }}" method="post" onsubmit="return confirm('Are you sure?');">
+      <button class="btn btn-sm btn-outline-danger mt-2">Delete</button>
+    </form>
+  </div>
+</div>
+

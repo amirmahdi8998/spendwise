@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  /* Expense Item Hover Effect */
+  .expense-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .expense-card:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+
+  /* Expense Amount Badge */
+  .expense-amount {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background: #0d6efd; /* Bootstrap blue */
+    color: white;
+    border-radius: 20px;
+    margin-top: 6px;
+  }
+</style>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Expense Summary</h5>
+        <p class="card-text">Total Expenses: <strong>${{ total }}</strong> USD</p>
+
+        <!-- Monthly Income highlighted in green -->
+        <p class="card-text">
+          Monthly Income: <strong class="text-success">${{ monthly_income }}</strong> USD
+        </p>
+
+        <!-- Quick Insights -->
+        <div class="mt-4">
+          <h6>Quick Insights</h6>
+          <ul class="list-group small">
+            <li class="list-group-item">
+              <strong>Average Daily Spending:</strong>
+              ${{ (total / 30)|round(2) }}
+            </li>
+            <li class="list-group-item">
+              <strong>Remaining Days Budget:</strong>
+              {% if monthly_income %}
+                ${{ ((monthly_income - total) / 30)|round(2) }} / day
+              {% else %}
+                N/A
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Expense Items -->
+        <h6 class="mt-4">Expense Items</h6>
+        <div class="row">
+          {% for e in expenses %}
+            <div class="col-4 mb-3">
+              <div class="p-3 text-center expense-card">
+                <div class="fw-bold">{{ e['title'] }}</div>
+                <div class="expense-amount">${{ e['amount'] }}</div>
+              </div>
+            </div>
+          {% else %}
+            <div class="col-12 text-muted">No expenses recorded yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">Recent Transactions</h5>
+        <div class="list-group">
+          {% for e in expenses %}
+            {% include 'expense_row.html' %}
+          {% else %}
+            <div class="text-center text-muted p-3">No expenses recorded yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="col-md-4">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h6>Monthly Income</h6>
+        <p class="card-text">
+          Monthly Income: <strong class="text-success">${{ monthly_income }}</strong>
+        </p>
+        <h6>Remaining Balance</h6>
+        <p class="card-text">
+          Remaining Balance:
+          <strong class="{% if remaining_balance < 0 %}text-danger{% else %}text-success{% endif %}">
+            ${{ remaining_balance }}
+          </strong>
+        </p>
+        <a href="{{ url_for('set_income') }}" class="btn btn-outline-primary w-100 mt-2">Set Monthly Income</a>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6>Quick Actions</h6>
+        <a href="{{ url_for('add') }}" class="btn btn-primary w-100 mt-2">Add New Expense</a>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6>Tips</h6>
+        <ul class="small mb-0">
+          <li>Record your expenses daily or weekly for the best results.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
